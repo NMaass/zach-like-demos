@@ -19,3 +19,8 @@
   paint-order:stroke fill;
   stroke-linejoin:round;
 }
+
+/* Keep labels off the gridiron and scenery silhouette. */
+.tie-point text { transform:translate(.5px, 6px); }
+.rig-block--fixed text { transform:translateY(12px); }
+.rig-block--load text { transform:translateY(-12px); }
