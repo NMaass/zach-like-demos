@@ -1,54 +1,28 @@
-name: quality
-
+name: validate vertical slices
 on:
   push:
-    branches: [main, 'feat/**']
+    branches: [main, 'rebuild/**']
   pull_request:
 
-permissions:
-  contents: read
-
 jobs:
-  verify:
+  validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Use Node.js 22
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Unit tests
-        run: npm run test
-
-      - name: Production build
-        run: npm run build
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Browser tests
-        run: npm run test:e2e
-
-      - name: Upload browser report and showcase captures
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run audit:ui
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
-          name: workshop-trials-browser-report
-          path: |
-            playwright-report
-            test-results
+          name: workshop-reference-screens
+          path: artifacts/
           if-no-files-found: ignore
-          retention-days: 14
