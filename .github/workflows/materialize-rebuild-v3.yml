@@ -1,0 +1,33 @@
+name: materialize rebuild v3
+on:
+  push:
+    branches: [rebuild/minimal-toolsets]
+    paths: [rebuild-materialize-v3.marker]
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/minimal-toolsets
+      - name: Assemble reviewed source archive
+        run: |
+          cat rebuild-parts/part-* > /tmp/rebuild.b64
+          base64 -d /tmp/rebuild.b64 > /tmp/rebuild.tar.gz
+          echo "51136be43b934d3dee450dfc4de13af290d453c63fa1a23460373f5f7e63da77  /tmp/rebuild.tar.gz" | sha256sum -c -
+      - name: Replace source while preserving workflow files
+        run: |
+          mkdir -p /tmp/rebuild-src
+          tar -xzf /tmp/rebuild.tar.gz -C /tmp/rebuild-src
+          rm -rf /tmp/rebuild-src/.github
+          find . -mindepth 1 -maxdepth 1 ! -name .git ! -name .github -exec rm -rf {} +
+          cp -a /tmp/rebuild-src/. .
+      - name: Commit materialized source
+        run: |
+          git config user.name "workshop-rebuild-bot"
+          git config user.email "workshop-rebuild-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: rebuild prototypes around minimal physical grammars"
+          git push origin HEAD:rebuild/minimal-toolsets
