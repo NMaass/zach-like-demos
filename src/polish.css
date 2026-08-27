@@ -24,3 +24,33 @@
 .tie-point text { transform:translate(.5px, 6px); }
 .rig-block--fixed text { transform:translateY(12px); }
 .rig-block--load text { transform:translateY(-12px); }
+
+/* Microcopy must remain actual reading text, not decorative texture. */
+.limit-grid span,
+.live-score span,
+.score-triple span,
+.manifest-strip__label,
+.manifest-row > span,
+.reeve-sequence > span,
+.fold-history > span { font-size:8.5px; }
+
+.target-manifest__row strong,
+.target-cars i,
+.manifest-row i,
+.dummy-spec span { font-size:8px; }
+
+.packet-index { max-height:220px; }
+.packet-index__cell-number { font-size:8px; }
+.packet-index i {
+  grid-template-columns:16px minmax(0,1fr) auto;
+  gap:5px;
+  min-height:23px;
+  padding:3px 5px;
+  font-size:8px;
+}
+.packet-index i b {
+  width:14px;
+  height:14px;
+  font-size:7px;
+}
+.packet-index i em { font-size:7.5px; }
