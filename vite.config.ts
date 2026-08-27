@@ -3,12 +3,6 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: './',
-  test: {
-    environment: 'node',
-    include: ['src/**/*.test.ts'],
-    coverage: {
-      reporter: ['text', 'json-summary'],
-    },
-  },
+  server: { port: 5173 },
+  preview: { port: 4173 },
 });

@@ -1,113 +1,73 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Launcher } from './components/Launcher';
-import { BinderyGame } from './games/bindery/BinderyGame';
+import { FoldingGame } from './games/folding/FoldingGame';
 import { RailGame } from './games/rail/RailGame';
 import { RiggingGame } from './games/rigging/RiggingGame';
-import { useNotebook, useSettings } from './core/persistence';
-import type { CompletionRecord, GameEvaluation, GameId } from './core/types';
+import { useNotebook } from './core/storage';
+import type { CompletionRecord, GameId } from './core/types';
 
-interface AppRoute {
-  gameId: GameId | null;
-  puzzleIndex: number;
+interface Route {
+  game: GameId | null;
+  puzzle: number;
 }
 
-const gameIds = new Set<GameId>(['rail', 'bindery', 'rigging']);
+const gameIds = new Set<GameId>(['rail', 'folding', 'rigging']);
 
-function parseRoute(): AppRoute {
-  const [rawGameId, rawPuzzle] = window.location.hash.replace(/^#\/?/, '').split('/');
-  if (!rawGameId || !gameIds.has(rawGameId as GameId)) {
-    return { gameId: null, puzzleIndex: 0 };
-  }
-
-  const requestedPuzzle = Number(rawPuzzle ?? '1');
-  const puzzleIndex = Number.isFinite(requestedPuzzle)
-    ? Math.max(0, Math.min(9, Math.trunc(requestedPuzzle) - 1))
-    : 0;
-  return { gameId: rawGameId as GameId, puzzleIndex };
+function readRoute(): Route {
+  const [rawGame, rawPuzzle] = window.location.hash.replace(/^#\/?/, '').split('/');
+  if (!rawGame || !gameIds.has(rawGame as GameId)) return { game: null, puzzle: 0 };
+  const parsed = Number(rawPuzzle ?? '1');
+  const puzzle = Number.isFinite(parsed) ? Math.max(0, Math.min(9, Math.trunc(parsed) - 1)) : 0;
+  return { game: rawGame as GameId, puzzle };
 }
 
-function setRoute(gameId: GameId | null, puzzleIndex = 0, replace = false): void {
-  const hash = gameId ? `#/${gameId}/${puzzleIndex + 1}` : '#/';
+function navigate(game: GameId | null, puzzle = 0, replace = false) {
+  const hash = game ? `#/${game}/${puzzle + 1}` : '#/';
   if (replace) {
-    window.history.replaceState(null, '', hash);
+    history.replaceState(null, '', hash);
     window.dispatchEvent(new HashChangeEvent('hashchange'));
-  } else {
-    window.location.hash = hash;
+    return;
   }
+  window.location.hash = hash;
 }
 
 export default function App() {
-  const [route, setCurrentRoute] = useState<AppRoute>(() => parseRoute());
-  const { notebook, update: updateNotebook, setEvaluation } = useNotebook();
-  const { settings, update: updateSettings } = useSettings();
+  const [route, setRoute] = useState<Route>(() => readRoute());
+  const { notebook, recordCompletion, saveEvaluation } = useNotebook();
 
   useEffect(() => {
-    const onHashChange = () => setCurrentRoute(parseRoute());
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    const handler = () => setRoute(readRoute());
+    window.addEventListener('hashchange', handler);
+    return () => window.removeEventListener('hashchange', handler);
   }, []);
 
-  const openGame = useCallback((gameId: GameId, puzzleIndex: number) => {
-    setRoute(gameId, puzzleIndex);
-  }, []);
-
-  const selectPuzzle = useCallback(
-    (puzzleIndex: number) => {
-      if (!route.gameId) return;
-      setRoute(route.gameId, puzzleIndex, true);
-    },
-    [route.gameId],
+  const complete = useCallback(
+    (game: GameId, puzzleId: string, completion: CompletionRecord) => recordCompletion(game, puzzleId, completion),
+    [recordCompletion],
   );
 
-  const completePuzzle = useCallback(
-    (gameId: GameId, puzzleId: string, completion: CompletionRecord) => {
-      updateNotebook((current) => ({
-        ...current,
-        completions: {
-          ...current.completions,
-          [gameId]: {
-            ...(current.completions[gameId] ?? {}),
-            [puzzleId]: completion,
-          },
-        },
-      }));
-    },
-    [updateNotebook],
-  );
-
-  const saveEvaluation = useCallback(
-    (gameId: GameId, evaluation: Omit<GameEvaluation, 'updatedAt'>) => {
-      setEvaluation(gameId, evaluation);
-    },
-    [setEvaluation],
-  );
-
-  if (!route.gameId) {
+  if (!route.game) {
     return (
       <Launcher
         notebook={notebook}
-        seenIntro={settings.seenIntro}
-        onMarkIntroSeen={() => updateSettings({ seenIntro: true })}
-        onOpenGame={openGame}
+        onOpen={(game) => navigate(game, 0)}
         onSaveEvaluation={saveEvaluation}
       />
     );
   }
 
-  const commonProps = {
-    puzzleIndex: route.puzzleIndex,
-    onPuzzleIndexChange: selectPuzzle,
-    onBack: () => setRoute(null),
-    soundEnabled: settings.sound,
-    onToggleSound: () => updateSettings({ sound: !settings.sound }),
+  const common = {
+    puzzleIndex: route.puzzle,
+    onPuzzleIndexChange: (index: number) => navigate(route.game, index, true),
+    onBack: () => navigate(null),
     notebook,
-    onComplete: completePuzzle,
-    evaluation: notebook.evaluations[route.gameId],
-    onSaveEvaluation: (evaluation: Omit<GameEvaluation, 'updatedAt'>) =>
-      saveEvaluation(route.gameId as GameId, evaluation),
   };
 
-  if (route.gameId === 'rail') return <RailGame {...commonProps} />;
-  if (route.gameId === 'bindery') return <BinderyGame {...commonProps} />;
-  return <RiggingGame {...commonProps} />;
+  if (route.game === 'rail') {
+    return <RailGame {...common} onComplete={(game, puzzleId, completion) => complete(game, puzzleId, completion)} />;
+  }
+  if (route.game === 'folding') {
+    return <FoldingGame {...common} onComplete={(game, puzzleId, completion) => complete(game, puzzleId, completion)} />;
+  }
+  return <RiggingGame {...common} onComplete={(game, puzzleId, completion) => complete(game, puzzleId, completion)} />;
 }

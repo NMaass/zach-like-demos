@@ -1,25 +1,20 @@
-export type GameId = 'rail' | 'bindery' | 'rigging';
+export type GameId = 'rail' | 'folding' | 'rigging';
 
-export interface PuzzleStory {
-  id: string;
-  number: number;
-  title: string;
-  client: string;
-  date: string;
-  brief: string;
-  note: string;
-  completion: string;
-  hint: string;
+export interface ScoreRecord {
+  primary: number;
+  secondary: number;
+  tertiary?: number;
 }
 
 export interface CompletionRecord {
-  completedAt: string;
-  elapsedSeconds: number;
-  primaryMetric: number;
-  secondaryMetric: number;
+  solvedAt: string;
+  elapsedMs: number;
+  attempts: number;
+  undos: number;
+  score: ScoreRecord;
 }
 
-export interface GameEvaluation {
+export interface EvaluationRecord {
   buildFeel: number;
   clarity: number;
   depth: number;
@@ -28,18 +23,17 @@ export interface GameEvaluation {
   updatedAt: string;
 }
 
-export interface PlaytestNotebook {
+export interface Notebook {
   completions: Partial<Record<GameId, Record<string, CompletionRecord>>>;
-  evaluations: Partial<Record<GameId, GameEvaluation>>;
+  evaluations: Partial<Record<GameId, EvaluationRecord>>;
 }
 
-export interface GameDescriptor {
-  id: GameId;
+export interface PuzzleMeta {
+  id: string;
   title: string;
-  subtitle: string;
-  year: string;
-  location: string;
-  summary: string;
-  accent: string;
-  metricLabels: readonly [string, string];
+  date: string;
+  sender: string;
+  subject: string;
+  memo: string;
+  aside?: string;
 }
