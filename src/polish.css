@@ -1,0 +1,21 @@
+.theme-folding {
+  --surface-deep:#a99772;
+  --muted:#483729;
+}
+
+.rig-block text {
+  fill:#bec5c1;
+  stroke:#252a2c;
+  stroke-width:.55;
+  paint-order:stroke fill;
+  stroke-linejoin:round;
+}
+
+.tie-point text,
+.hand-point text {
+  fill:#c1c6c3;
+  stroke:#252a2c;
+  stroke-width:.55;
+  paint-order:stroke fill;
+  stroke-linejoin:round;
+}
