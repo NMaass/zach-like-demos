@@ -35,6 +35,29 @@ describe('Coldwater Junction', () => {
     expect(new Set(railPuzzles.map((puzzle) => puzzle.switches)).size).toBeGreaterThan(1);
     expect(railPuzzles.every((puzzle) => puzzle.canonical.every((connection) => connection.a && connection.b))).toBe(true);
   });
+
+  it('eventually requires the same turnout to work backward as a merger', () => {
+    for (const id of ['short-iron', 'relief-yard']) {
+      const puzzle = railPuzzles.find((entry) => entry.id === id)!;
+      const ports = new Set(puzzle.canonical.flatMap((connection) => [connection.a, connection.b]));
+      const hasTrailingMerge = Array.from({ length: puzzle.switches }, (_, index) =>
+        ports.has(`s${index}:a`) && ports.has(`s${index}:b`) && ports.has(`s${index}:stem`),
+      ).some(Boolean);
+      expect(hasTrailingMerge, id).toBe(true);
+      expect(puzzle.targets).toHaveLength(3);
+    }
+  });
+
+  it('finishes with all four machines serving a five-road cut', () => {
+    const puzzle = railPuzzles.at(-1)!;
+    expect(puzzle.targets).toHaveLength(5);
+    for (let index = 0; index < puzzle.switches; index += 1) {
+      expect(
+        puzzle.canonical.some((connection) => connection.a.startsWith(`s${index}:`) || connection.b.startsWith(`s${index}:`)),
+        `s${index}`,
+      ).toBe(true);
+    }
+  });
 });
 
 describe('Bellweather Folding Room', () => {
