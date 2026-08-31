@@ -19,12 +19,9 @@ const canonical: Fold[][] = [
   ['R'], ['R','B'], ['R','R'], ['R','B','R'], ['B','R'], ['R','R','B'], ['R','B','L','T'], ['B','R','R'], ['T','L','B','R'], ['L','T','R','B'],
 ];
 
-function makeGrid(rows: number, cols: number, front: number[], back: number[]): Grid {
+function makeBlankGrid(rows: number, cols: number): Grid {
   let id = 0;
-  return Array.from({ length: rows }, (_, y) => Array.from({ length: cols }, (_, x) => {
-    const index = y * cols + x;
-    return [{ front: front[index]!, back: back[index]!, frontUp: true, id: id++ }];
-  }));
+  return Array.from({ length: rows }, () => Array.from({ length: cols }, () => [{ front: 0, back: 0, frontUp: true, id: id++ }]));
 }
 
 function flipStack(stack: Stack): Stack {
@@ -77,10 +74,31 @@ function signature(grid: Grid) {
   };
 }
 
+function makeImposedGrid(rows: number, cols: number, sequence: Fold[]): Grid {
+  const blank = makeBlankGrid(rows, cols);
+  const finished = signature(applySequence(blank, sequence));
+  if (!finished) throw new Error('Canonical fold sequence must produce one signature.');
+
+  const pages = new Map<number, { front: number; back: number }>();
+  finished.stack.forEach((leaf, index) => {
+    const facing = index * 2 + 1;
+    const reverse = facing + 1;
+    pages.set(leaf.id, leaf.frontUp ? { front: facing, back: reverse } : { front: reverse, back: facing });
+  });
+
+  return makeBlankGrid(rows, cols).map((row) => row.map((stack) => {
+    const leaf = stack[0]!;
+    const imposed = pages.get(leaf.id)!;
+    return [{ ...leaf, ...imposed }];
+  }));
+}
+
 export function BinderyGame({ puzzleIndex, onPuzzleIndexChange, onBack }: BinderyGameProps) {
   const puzzle = binderyPuzzles[puzzleIndex] ?? binderyPuzzles[0]!;
-  const initial = useMemo<FoldState>(() => ({ grid: makeGrid(puzzle.rows,puzzle.cols,puzzle.front,puzzle.back), folds: [] }), [puzzle]);
-  const targetGrid = useMemo(() => applySequence(makeGrid(puzzle.rows,puzzle.cols,puzzle.front,puzzle.back), (canonical[puzzleIndex] ?? canonical[0]!)), [puzzle,puzzleIndex]);
+  const sequence = canonical[puzzleIndex] ?? canonical[0]!;
+  const imposed = useMemo(() => makeImposedGrid(puzzle.rows, puzzle.cols, sequence), [puzzle.rows, puzzle.cols, sequence]);
+  const initial = useMemo<FoldState>(() => ({ grid: imposed, folds: [] }), [imposed]);
+  const targetGrid = useMemo(() => applySequence(imposed, sequence), [imposed, sequence]);
   const target = signature(targetGrid)!;
   const history = useHistory<FoldState>(initial);
   const [runState,setRunState]=useState<RunState>('idle');
