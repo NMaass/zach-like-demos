@@ -50,3 +50,10 @@ test('puzzle navigation replaces content without moving the workspace frame', as
   expect(after?.width).toBe(before?.width);
   expect(after?.height).toBe(before?.height);
 });
+
+test('capture polished vertical slices for visual review', async ({ page }) => {
+  for (const [name, route] of [['launcher', '/#/'], ['rail', '/#/rail/4'], ['bindery', '/#/bindery/4'], ['rigging', '/#/rigging/4']] as const) {
+    await page.goto(route);
+    await page.screenshot({ path: `test-results/showcase-${name}.png`, fullPage: true });
+  }
+});
