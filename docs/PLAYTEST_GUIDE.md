@@ -1,45 +1,14 @@
-# Expert Playtest Guide
+# Expert playtest guide
 
-## Recommended session
+Play at least the first four work orders of each trial before comparing them. Continue to ten only when the mechanism still feels promising.
 
-Plan for 45–75 minutes total. Use a desktop or laptop with a mouse or trackpad. Headphones are optional.
+Watch for:
 
-For each prototype:
+- the time from seeing a better idea to executing the revision;
+- whether a failed Test teaches something specific;
+- whether the interface ever makes the player think about the editor instead of the mechanism;
+- whether two people naturally produce visibly different valid solutions;
+- whether optimization begins voluntarily after the first successful solution;
+- whether later puzzles create new reasoning from old rules rather than from new tools.
 
-1. Play work orders 1–3 without reading this document further.
-2. Continue to at least one later order chosen from 6–10.
-3. Re-open one solved order and try to improve the primary metric.
-4. Complete the in-app expert review before switching prototypes.
-
-## What to observe
-
-### Build feel
-
-- Are placements confident or tentative?
-- Is revision local, predictable, and faster than restarting?
-- Does the workpiece feel like one coherent object?
-- Are successful structures satisfying to watch in motion?
-
-### Clarity
-
-- Can the player predict the next state before acting?
-- Are invalid operations prevented or explained at the right time?
-- Does inspection identify a useful failure rather than merely rejecting the solution?
-- Do visual materials reinforce mechanics rather than decorate them?
-
-### Depth
-
-- Do later constraints create genuinely different reasoning?
-- Are there credible alternative solutions?
-- Can efficiency metrics produce interesting optimization without becoming mandatory?
-- Does the existing vocabulary seem capable of supporting at least 30 strong puzzles?
-
-### Setting
-
-- Do the work orders make the specifications memorable?
-- Does the period fiction explain why the player is manipulating this system?
-- Is the tone distinctive without interrupting iteration?
-
-## Export
-
-Return to the launcher and choose **Export notes**. The JSON contains completion timings, two metrics per solved order, the four ratings, and written observations. No gameplay telemetry is collected automatically.
+The disqualifying question is simple: **would you want to manipulate this mechanism for another twenty puzzles if no new tool were ever added?**

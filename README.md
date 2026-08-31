@@ -1,64 +1,49 @@
-# Workshop Trials
+# Workshop Trials — Revision B
 
-Three polished, non-computing Zach-like vertical slices built as a comparative playtest instrument:
+Three deliberately small, non-computing Zach-like vertical slices for comparative expert playtesting.
 
-- **Coldwater Junction** — design compact railroad yards whose spring turnouts sort complete cuts of cars.
-- **Bellweather Bindery** — fold, trim, and stitch printed sheets until they physically match an approved dummy.
-- **The Orpheum Fly Loft** — route orthogonal lift lines, select pulley ratios, and balance theatrical scenery.
+The first implementation failed the premise by treating “small toolset” as a theme rather than a mechanical constraint. Revision B starts over from one rule: **the player gets one construction vocabulary per game; depth must come from composition, not feature accumulation.**
 
-Each prototype includes **10 authored puzzles**, a tiny deterministic toolset, a self-contained period story, persistent local progress, undo/redo, keyboard shortcuts, sound feedback, and an expert evaluation form. A shared launcher exports all playtest notes as JSON.
+## The three trials
 
-## Run locally
+### Coldwater Junction — `#/rail/1`
+1937 railroad civil engineering. **The player places only rail.** Drag between survey pins; junctions emerge where rail branches. A fixed tower routes freight cars by their waybills when the design is tested. The optimization pressure is shared infrastructure and rail length.
+
+### Bellweather Bindery — `#/bindery/1`
+1925 commercial bookbinding. **The player only folds.** Every sheet starts with a fixed printer's imposition. Fold outside edges inward until the physical leaf stack matches the approved dummy. The puzzle is sequence and state transformation, not a palette of craft operations.
+
+### The Orpheum Fly Loft — `#/rigging/1`
+1956 theatrical rigging. **The player places only one continuous rope.** Pulleys, battens, obstacles, and tie-offs belong to the work order. Reeve a path through them; mechanical advantage and handline travel emerge from the rope path.
+
+Each trial contains ten authored work orders with concrete in-world reasons for the specification.
+
+## Run
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the URL Vite prints, normally `http://localhost:5173`.
-
-Production check:
+Full verification:
 
 ```bash
 npm run check
-npm run build
-npm run preview
-```
-
-Browser tests:
-
-```bash
 npx playwright install chromium
 npm run test:e2e
 ```
 
-## Direct routes
+## Design standard
 
-The launcher is at `#/`. Each prototype and puzzle can be opened directly:
+Revision B is intentionally narrower:
 
-```text
-#/rail/1
-#/bindery/1
-#/rigging/1
-```
+- one player-created material / operation per prototype;
+- direct manipulation instead of a tool palette;
+- deterministic rules that can be reasoned about before pressing Test;
+- puzzle-specific fixed hardware/geometry when it makes a work order technically and narratively distinct;
+- specifications described as believable jobs, not arbitrary level goals;
+- immediate undo and revision;
+- fixed workspace geometry and stable status regions;
+- visible optimization metrics after the mechanism already works;
+- no research, currencies, inventories, unlock trees, ratings forms, or meta-progression competing with the puzzle.
 
-Puzzle numbers run from 1 through 10.
-
-## Playtest protocol
-
-1. Play at least three work orders in each prototype.
-2. Judge the *act of building* before judging content quantity.
-3. Record hesitation, misclicks, unwanted movement, and whether revision feels safer than restarting.
-4. Use **Rate this prototype** and export the notebook from the launcher.
-
-No accounts, network calls, analytics, or external services are used. Progress and notes stay in browser `localStorage` until exported or cleared.
-
-## Design constraints
-
-- Small, fixed vocabulary; complexity comes from composition.
-- Deterministic simulation with explicit failure messages.
-- Outcome specifications rather than prescribed procedures.
-- Stable workspace geometry: tool changes, status changes, and sound toggles do not move the workbench.
-- Original vector/CSS art with no externally licensed runtime assets.
-
-See [Design Notes](docs/DESIGN_NOTES.md), [Asset Strategy](docs/ASSET_STRATEGY.md), and [Playtest Guide](docs/PLAYTEST_GUIDE.md).
+The target of these slices is not “feature complete.” It is to determine whether manipulating **rail**, **a folded sheet**, or **a rope path** is intrinsically satisfying enough to justify a larger Zach-like.
