@@ -1,7 +1,7 @@
 {
   "name": "zach-like-demos",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,8 +9,8 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --pretty false",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "vitest run tests/puzzle-data.test.ts",
+    "test:watch": "vitest tests/puzzle-data.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:update": "playwright test --update-snapshots",
     "check": "npm run typecheck && npm run lint && npm run test && npm run build"
