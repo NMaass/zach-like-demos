@@ -61,7 +61,7 @@ test('bindery work order four is physically self-consistent and solvable', async
   await page.getByRole('button', { name: 'Fold bottom edge inward' }).click();
   await page.getByRole('button', { name: 'Fold right edge inward' }).click();
   await page.getByRole('button', { name: 'TEST' }).click();
-  await expect(page.getByText(/Approved\. 3 folds/)).toBeVisible();
+  await expect(page.locator('[data-stable-swap-state][data-active]').filter({ hasText: 'Approved. 3 folds' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'RUN AGAIN' })).toBeVisible();
 });
 
@@ -71,7 +71,7 @@ test('rigging work order one can be solved by reeving one rope through fixed har
     await page.getByRole('button', { name: `Route rope through ${label}` }).click();
   }
   await page.getByRole('button', { name: 'TEST' }).click();
-  await expect(page.getByText(/Safe\. 4:1 purchase, 150 lb hand effort, 72 ft handline travel\./)).toBeVisible();
+  await expect(page.locator('[data-stable-swap-state][data-active]').filter({ hasText: 'Safe. 4:1 purchase, 150 lb hand effort, 72 ft handline travel.' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'RUN AGAIN' })).toBeVisible();
 });
 
