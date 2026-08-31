@@ -51,6 +51,30 @@ test('puzzle navigation replaces content without moving the workspace frame', as
   expect(after?.height).toBe(before?.height);
 });
 
+test('bindery work order four is physically self-consistent and solvable', async ({ page }) => {
+  await page.goto('/#/bindery/4');
+  const approved = page.getByLabel('Approved finished dummy');
+  await expect(approved.getByText('1', { exact: true }).first()).toBeVisible();
+  await expect(approved.getByText('16', { exact: true }).first()).toBeVisible();
+
+  await page.getByRole('button', { name: 'Fold right edge inward' }).click();
+  await page.getByRole('button', { name: 'Fold bottom edge inward' }).click();
+  await page.getByRole('button', { name: 'Fold right edge inward' }).click();
+  await page.getByRole('button', { name: 'TEST' }).click();
+  await expect(page.getByText(/Approved\. 3 folds/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'RUN AGAIN' })).toBeVisible();
+});
+
+test('rigging work order one can be solved by reeving one rope through fixed hardware', async ({ page }) => {
+  await page.goto('/#/rigging/1');
+  for (const label of ['F1', 'M1', 'F2', 'M2', 'DEAD END']) {
+    await page.getByRole('button', { name: `Route rope through ${label}` }).click();
+  }
+  await page.getByRole('button', { name: 'TEST' }).click();
+  await expect(page.getByText(/Safe\. 4:1 purchase, 150 lb hand effort, 72 ft handline travel\./)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'RUN AGAIN' })).toBeVisible();
+});
+
 test('capture polished vertical slices for visual review', async ({ page }) => {
   for (const [name, route] of [['launcher', '/#/'], ['rail', '/#/rail/4'], ['bindery', '/#/bindery/4'], ['rigging', '/#/rigging/4']] as const) {
     await page.goto(route);
